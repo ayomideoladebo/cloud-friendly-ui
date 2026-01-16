@@ -79,10 +79,13 @@ export function useUpdateShipmentStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, status, current_location }: { id: string; status: ShipmentStatus; current_location?: string }) => {
-      const updateData: { status: ShipmentStatus; current_location?: string } = { status };
+    mutationFn: async ({ id, status, current_location, note }: { id: string; status: ShipmentStatus; current_location?: string; note?: string }) => {
+      const updateData: { status: ShipmentStatus; current_location?: string; note?: string } = { status };
       if (current_location) {
         updateData.current_location = current_location;
+      }
+      if (note !== undefined) {
+        updateData.note = note;
       }
 
       const { data, error } = await supabase

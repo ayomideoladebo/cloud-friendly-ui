@@ -1,4 +1,4 @@
-export type ShipmentStatus = 'ordered' | 'shipped' | 'in_transit' | 'out_for_delivery' | 'delivered';
+export type ShipmentStatus = 'ordered' | 'shipped' | 'in_transit' | 'out_for_delivery' | 'delivered' | 'pending_payment';
 
 export type CarrierType = 'fedex' | 'ups' | 'dhl' | 'usps' | 'other';
 
@@ -16,6 +16,7 @@ export interface Shipment {
   destination_location: string;
   item_description: string | null;
   carrier: CarrierType;
+  note: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -38,6 +39,7 @@ export const STATUS_LABELS: Record<ShipmentStatus, string> = {
   in_transit: 'In Transit',
   out_for_delivery: 'Out for Delivery',
   delivered: 'Delivered',
+  pending_payment: 'Pending Payment',
 };
 
 export const CARRIER_LABELS: Record<CarrierType, string> = {
@@ -48,4 +50,4 @@ export const CARRIER_LABELS: Record<CarrierType, string> = {
   other: 'Other',
 };
 
-export const STATUS_ORDER: ShipmentStatus[] = ['ordered', 'shipped', 'in_transit', 'out_for_delivery', 'delivered'];
+export const STATUS_ORDER: ShipmentStatus[] = ['ordered', 'shipped', 'in_transit', 'out_for_delivery', 'delivered', 'pending_payment'];

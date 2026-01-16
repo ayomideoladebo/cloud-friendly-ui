@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Edit, Truck } from 'lucide-react';
+import { Edit, Truck, StickyNote } from 'lucide-react';
 import { Shipment, STATUS_LABELS, ShipmentStatus, STATUS_ORDER } from '@/types/shipment';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
 interface ShipmentTableProps {
@@ -27,12 +28,14 @@ const STATUS_COLORS: Record<ShipmentStatus, string> = {
   in_transit: 'bg-primary/10 text-primary',
   out_for_delivery: 'bg-warning/10 text-warning',
   delivered: 'bg-success/10 text-success',
+  pending_payment: 'bg-destructive/10 text-destructive',
 };
 
 export function ShipmentTable({ shipments, statusFilter }: ShipmentTableProps) {
   const [editingShipment, setEditingShipment] = useState<Shipment | null>(null);
   const [newStatus, setNewStatus] = useState<ShipmentStatus>('ordered');
   const [newLocation, setNewLocation] = useState('');
+  const [newNote, setNewNote] = useState('');
   const updateStatus = useUpdateShipmentStatus();
 
   const filteredShipments = statusFilter === 'all'
@@ -43,6 +46,7 @@ export function ShipmentTable({ shipments, statusFilter }: ShipmentTableProps) {
     setEditingShipment(shipment);
     setNewStatus(shipment.status);
     setNewLocation(shipment.current_location || '');
+    setNewNote(shipment.note || '');
   };
 
   const handleUpdate = async () => {
@@ -52,6 +56,7 @@ export function ShipmentTable({ shipments, statusFilter }: ShipmentTableProps) {
       id: editingShipment.id,
       status: newStatus,
       current_location: newLocation || undefined,
+      note: newNote || undefined,
     });
 
     setEditingShipment(null);
@@ -229,6 +234,19 @@ export function ShipmentTable({ shipments, statusFilter }: ShipmentTableProps) {
                 value={newLocation}
                 onChange={(e) => setNewLocation(e.target.value)}
                 placeholder="e.g., Distribution Hub, Node 4"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <StickyNote className="w-4 h-4" />
+                Note
+              </Label>
+              <Textarea
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder="Add any notes about this shipment..."
+                className="min-h-[80px] resize-none"
               />
             </div>
           </div>
