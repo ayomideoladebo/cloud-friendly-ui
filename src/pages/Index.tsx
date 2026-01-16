@@ -1,11 +1,9 @@
 import { TrackingSearch } from '@/components/TrackingSearch';
-import { Header } from '@/components/Header';
 import { Package } from 'lucide-react';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Header />
       
       <main className="container py-12 sm:py-20 lg:py-28">
         <div className="flex flex-col items-center text-center">

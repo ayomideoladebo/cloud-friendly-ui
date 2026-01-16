@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Building, User, MapPin, Phone, Mail, Package, Truck, Zap } from 'lucide-react';
+import { Building, User, MapPin, Phone, Mail, Package, Truck, Zap, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { useCreateShipment } from '@/hooks/useShipments';
 import { CarrierType, CARRIER_LABELS } from '@/types/shipment';
+import { toast } from 'sonner';
 
 export function CreateDeliveryForm() {
-  const navigate = useNavigate();
   const createShipment = useCreateShipment();
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [createdTrackingNumber, setCreatedTrackingNumber] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const [formData, setFormData] = useState({
     sender_name: '',
@@ -42,10 +45,31 @@ export function CreateDeliveryForm() {
         carrier: formData.carrier,
       });
       
-      navigate(`/track/${result.tracking_number}`);
+      setCreatedTrackingNumber(result.tracking_number);
+      setShowSuccessDialog(true);
+      
+      // Reset form
+      setFormData({
+        sender_name: '',
+        recipient_name: '',
+        recipient_address: '',
+        recipient_phone: '',
+        recipient_email: '',
+        origin_location: '',
+        destination_location: '',
+        item_description: '',
+        carrier: 'other' as CarrierType,
+      });
     } catch (error) {
       // Error is handled by the mutation
     }
+  };
+
+  const handleCopyTracking = async () => {
+    await navigator.clipboard.writeText(createdTrackingNumber);
+    setCopied(true);
+    toast.success('Tracking number copied!');
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleChange = (field: string, value: string) => {
@@ -133,10 +157,10 @@ export function CreateDeliveryForm() {
             </div>
           </div>
 
-          {/* Origin & Destination */}
+          {/* Sender Location & Destination */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="origin_location">Origin Location</Label>
+              <Label htmlFor="origin_location">Sender Location</Label>
               <Input
                 id="origin_location"
                 placeholder="City, Country"
@@ -220,6 +244,35 @@ export function CreateDeliveryForm() {
           </p>
         </form>
       </CardContent>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-success">
+              <Check className="w-5 h-5" />
+              Delivery Created!
+            </DialogTitle>
+            <DialogDescription>
+              Your shipment has been created successfully.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label className="text-sm text-muted-foreground">Tracking Number</Label>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="flex-1 p-3 bg-muted rounded-lg font-mono text-sm font-medium">
+                {createdTrackingNumber}
+              </div>
+              <Button variant="outline" size="icon" onClick={handleCopyTracking}>
+                {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+          <Button variant="hero" onClick={() => setShowSuccessDialog(false)} className="w-full">
+            Done
+          </Button>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

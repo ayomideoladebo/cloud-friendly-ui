@@ -7,6 +7,8 @@ import Index from "./pages/Index";
 import TrackShipment from "./pages/TrackShipment";
 import CreateDelivery from "./pages/CreateDelivery";
 import ManageDeliveries from "./pages/ManageDeliveries";
+import AdminLogin from "./pages/AdminLogin";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +24,8 @@ const App = () => (
           <Route path="/track/:trackingNumber" element={<TrackShipment />} />
           <Route path="/create" element={<CreateDelivery />} />
           <Route path="/manage" element={<ManageDeliveries />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

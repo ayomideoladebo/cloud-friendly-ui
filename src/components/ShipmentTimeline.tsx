@@ -1,4 +1,4 @@
-import { Check, Package, Truck, MapPin, Home } from 'lucide-react';
+import { Check, Package, Truck, MapPin, Home, DollarSign } from 'lucide-react';
 import { ShipmentStatus, STATUS_ORDER, STATUS_LABELS } from '@/types/shipment';
 import { cn } from '@/lib/utils';
 
@@ -12,26 +12,39 @@ const STATUS_ICONS: Record<ShipmentStatus, React.ReactNode> = {
   in_transit: <Truck className="w-4 h-4" />,
   out_for_delivery: <MapPin className="w-4 h-4" />,
   delivered: <Home className="w-4 h-4" />,
+  pending_payment: <DollarSign className="w-4 h-4" />,
 };
 
+// Filter out pending_payment for timeline display (it's a special status)
+const TIMELINE_STATUSES = STATUS_ORDER.filter(s => s !== 'pending_payment');
+
 export function ShipmentTimeline({ currentStatus }: ShipmentTimelineProps) {
-  const currentIndex = STATUS_ORDER.indexOf(currentStatus);
+  // If pending_payment, show as a special state at ordered position
+  const displayStatus = currentStatus === 'pending_payment' ? 'ordered' : currentStatus;
+  const currentIndex = TIMELINE_STATUSES.indexOf(displayStatus);
 
   return (
     <div className="w-full py-4">
+      {/* Pending Payment Notice */}
+      {currentStatus === 'pending_payment' && (
+        <div className="mb-4 p-3 bg-warning/10 border border-warning/30 rounded-lg text-center">
+          <p className="text-sm font-medium text-warning">Pending Payment - Shipment on hold</p>
+        </div>
+      )}
+
       {/* Desktop Timeline */}
       <div className="hidden sm:block relative">
         {/* Progress Line */}
         <div className="absolute top-4 left-0 right-0 h-0.5 bg-border">
           <div
             className="h-full bg-primary transition-all duration-500"
-            style={{ width: `${(currentIndex / (STATUS_ORDER.length - 1)) * 100}%` }}
+            style={{ width: `${(currentIndex / (TIMELINE_STATUSES.length - 1)) * 100}%` }}
           />
         </div>
 
         {/* Status Points */}
         <div className="relative flex justify-between">
-          {STATUS_ORDER.map((status, index) => {
+          {TIMELINE_STATUSES.map((status, index) => {
             const isCompleted = index <= currentIndex;
             const isCurrent = index === currentIndex;
 
@@ -64,7 +77,7 @@ export function ShipmentTimeline({ currentStatus }: ShipmentTimelineProps) {
 
       {/* Mobile Timeline */}
       <div className="sm:hidden space-y-3">
-        {STATUS_ORDER.map((status, index) => {
+        {TIMELINE_STATUSES.map((status, index) => {
           const isCompleted = index <= currentIndex;
           const isCurrent = index === currentIndex;
 
@@ -89,7 +102,7 @@ export function ShipmentTimeline({ currentStatus }: ShipmentTimelineProps) {
               >
                 {STATUS_LABELS[status]}
               </span>
-              {index < STATUS_ORDER.length - 1 && (
+              {index < TIMELINE_STATUSES.length - 1 && (
                 <div
                   className={cn(
                     "hidden flex-1 h-0.5",

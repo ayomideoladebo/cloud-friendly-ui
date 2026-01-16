@@ -22,6 +22,7 @@ export type Database = {
           destination_location: string
           id: string
           item_description: string | null
+          note: string | null
           origin_location: string
           recipient_address: string
           recipient_email: string | null
@@ -39,6 +40,7 @@ export type Database = {
           destination_location: string
           id?: string
           item_description?: string | null
+          note?: string | null
           origin_location: string
           recipient_address: string
           recipient_email?: string | null
@@ -56,6 +58,7 @@ export type Database = {
           destination_location?: string
           id?: string
           item_description?: string | null
+          note?: string | null
           origin_location?: string
           recipient_address?: string
           recipient_email?: string | null
@@ -83,6 +86,7 @@ export type Database = {
         | "in_transit"
         | "out_for_delivery"
         | "delivered"
+        | "pending_payment"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -217,6 +221,7 @@ export const Constants = {
         "in_transit",
         "out_for_delivery",
         "delivered",
+        "pending_payment",
       ],
     },
   },
